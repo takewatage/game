@@ -1,4 +1,4 @@
-
+import assets from './assets.json'
 import { PhaserAssets } from 'phaser-assets-loader'
 const phaserAssets = assets as unknown as PhaserAssets
 export default (scene: Phaser.Scene) => {

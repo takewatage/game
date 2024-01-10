@@ -3,8 +3,9 @@ import { Game } from 'phavuer'
 import { onMounted } from "vue"
 import { useWindowSize } from '@vueuse/core'
 
-import TitleScene from "@/components/Scenes/TitleScene.vue";
-import config from "@/config"
+import TitleScene from "@/components/Scenes/TitleScene.vue"
+import config from "./config"
+import GameScene from "@/components/Scenes/GameScene.vue";
 
 const { width, height } = useWindowSize()
 
@@ -49,6 +50,7 @@ onMounted(() => {
         :height="50"
       />
 
+      <GameScene />
     </Game>
   </div>
 </template>
