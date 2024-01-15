@@ -3,14 +3,8 @@ import { defineComponent } from 'vue'
 import { Scene, useGame, Text } from 'phavuer'
 import loadAssets from '../../loadAssets'
 import GameButton from "@/components/Ui/GameButton.vue";
+import config from "../../config";
 
-
-const props = defineProps<{
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-}>()
 const game = useGame()
 
 const preload = (scene: Phaser.Scene) => {
@@ -27,10 +21,10 @@ const onStart = () => {
 <template>
   <Scene name="TitleScene" @preload="preload">
     <GameButton
-      :x="x"
-      :y="y"
-      :width="width"
-      :height="height"
+      :x="config.WIDTH / 2"
+      :y="config.HEIGHT / 2"
+      :width="155"
+      :height="50"
       @on-click="onStart"
     />
   </Scene>

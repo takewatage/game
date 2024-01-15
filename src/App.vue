@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Game } from 'phavuer'
-import { onMounted } from "vue"
+import { provide, ref, computed } from "vue"
 import { useWindowSize } from '@vueuse/core'
 
 import TitleScene from "@/components/Scenes/TitleScene.vue"
@@ -8,6 +8,7 @@ import config from "./config"
 import GameScene from "@/components/Scenes/GameScene.vue";
 
 const { width, height } = useWindowSize()
+const gameScene = ref(null)
 
 const gameConfig = {
   type: Phaser.AUTO,
@@ -17,7 +18,8 @@ const gameConfig = {
   physics: {
     default: 'arcade',
     arcade: {
-      gravity: { y: 0 }
+      gravity: { y: 300 }, // 重力
+      debug: true
     }
   },
   audio: {
@@ -28,10 +30,7 @@ const gameConfig = {
   },
   backgroundColor: '#4488aa',
 }
-
-onMounted(() => {
-
-})
+provide('player', computed(() => gameScene.value?.player))
 
 </script>
 
@@ -43,14 +42,9 @@ onMounted(() => {
       <p>{{ height }}</p>
     </div>
     <Game :config="gameConfig">
-      <TitleScene
-        :x="config.WIDTH / 2"
-        :y="config.HEIGHT / 2"
-        :width="155"
-        :height="50"
-      />
+      <TitleScene />
 
-      <GameScene />
+      <GameScene ref="gameScene" />
     </Game>
   </div>
 </template>

@@ -9,4 +9,7 @@ export default {
   BLEND_MODES: {
     OVERLAY: NaN
   },
+  GAME: {
+    PLAYER_HP: 100,
+  }
 }

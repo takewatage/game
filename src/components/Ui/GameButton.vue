@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { defineComponent } from 'vue'
 import { Container, Rectangle, Text } from 'phavuer'
 import config from '../../config'
 

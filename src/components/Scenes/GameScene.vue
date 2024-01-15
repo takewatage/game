@@ -1,40 +1,56 @@
 <script setup lang="ts">
-import { Scene, Rectangle, Text, useGame, Image } from 'phavuer'
-import { ref } from "vue"
-import Hit from "@/components/Hit.vue";
+import { Scene, Image } from 'phavuer'
+import { ref, nextTick } from "vue"
+import config from "../../config"
+import PlayerComponent from "@/components/GameObject/Player.vue"
+import PlatForm from "@/components/GameObject/PlatForm.vue"
 
-const hitVisible = ref(false)
-const hitX = ref(0)
-const hitY = ref(0)
+const player = ref(null)
+const platforms = ref([])
 
-const onClick = () => {
-  hitVisible.value = true
+const PLATFORM = [
+  {id: 'platform1', x: 0, y: 300, width: 320, height: 50},
+  {id: 'platform2', x: config.WIDTH - 320, y: 300, width: 320, height: 50},
+  {id: 'platform3', x: 0, y: config.HEIGHT, width: 960, height: 50},
+]
+
+const create = (scene: Phaser.Scene) => {
+  nextTick(() => {
+    platforms.value.forEach(platform => {
+      scene.physics.add.collider(player.value, platform)
+    })
+  })
+}
+
+const update = (scene) => {
+
+}
+
+const createPlayer = (_player: Phaser.Physics.Arcade.Sprite) => {
+  console.log('createPlayer')
+  player.value = _player
+}
+
+const createPlatform = layer => {
+  platforms.value.push(layer)
 }
 </script>
 
 <template>
-  <Scene name="GameScene" :autoStart="false">
+  <Scene name="GameScene" :autoStart="false" @create="create" @update="update">
     <Image
-      :originX="960"
-      :originY="540"
+      :x="960 / 2"
+      :y="540 / 2"
       texture="stage1"
-      :scale="0.5"/>
-    <Text text="Scene2" :x="15" :y="15" />
-    <Rectangle
-      :x="200"
-      :y="110"
-      :width="135"
-      :height="30"
-      :strokeColor="0x42B883"
-      :lineWidth="1"
-      @pointerdown="onClick"
+      :scale="0.5"
     />
-    <Text
-      text="GameScene!!!!"
-      :x="200"
-      :y="110"
-      :origin="0.5"
+    <PlayerComponent
+      @createPlayer="createPlayer"
     />
-    <Hit v-if="hitVisible" @end="hitVisible = false" :x="hitX" :y="hitY" />
+    <PlatForm
+      v-for="v in PLATFORM"
+      :data="v"
+      @create="createPlatform"
+    />
   </Scene>
 </template>
