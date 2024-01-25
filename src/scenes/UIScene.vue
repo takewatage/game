@@ -25,16 +25,20 @@
 
 <script lang="ts">
 import { defineComponent, inject, ref, reactive, watch } from 'vue'
-import { Scene, Text, Rectangle, Phavuer, StaticBody } from 'phavuer'
+import { Scene, Text, Rectangle, Phavuer } from 'phavuer'
+
 export default defineComponent({
   components: { Scene, Rectangle, Text },
   props: ['result'],
   emits: ['reset'],
-  setup (props, context) {
+  setup(props, context) {
     const canReset = ref(false)
     const score = inject('score')
     const bg = reactive<{ tween: Phavuer.TweenConfig | undefined }>({ tween: undefined })
-    const scoreText = reactive<{ visible: boolean, tween: Phavuer.TweenConfig | undefined }>({ visible: true, tween: undefined })
+    const scoreText = reactive<{ visible: boolean, tween: Phavuer.TweenConfig | undefined }>({
+      visible: true,
+      tween: undefined
+    })
     const create = () => {
       scoreText.visible = true
       scoreText.tween = undefined

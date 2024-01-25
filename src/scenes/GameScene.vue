@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { Scene, Image } from 'phavuer'
 import { ref, nextTick, provide, inject, Ref } from "vue"
-import config from "../../config"
+import config from "../config"
 import PlatForm from "@/components/GameObjects/PlatForm.vue"
-import Repository from "../../class/entities/Repository"
-import Star from "../../class/StarClass"
-import GameButton from "@/components/Ui/GameButton.vue"
+import Repository from "../class/entities/Repository"
+import Star from "../class/StarClass"
 import StarObject from "@/components/GameObjects/StarObject.vue"
 
 const player = ref<Phaser.Physics.Arcade.Sprite>()
