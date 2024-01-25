@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { defineComponent } from 'vue'
 import { Scene, useGame, Text } from 'phavuer'
 import loadAssets from '../../loadAssets'
 import GameButton from "@/components/Ui/GameButton.vue";
@@ -13,6 +12,7 @@ const preload = (scene: Phaser.Scene) => {
 
 const onStart = () => {
   game.scene.start('GameScene')
+  game.scene.start('UIScene')
   game.scene.stop('TitleScene')
 }
 

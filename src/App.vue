@@ -6,9 +6,13 @@ import { useWindowSize } from '@vueuse/core'
 import TitleScene from "@/components/Scenes/TitleScene.vue"
 import config from "./config"
 import GameScene from "@/components/Scenes/GameScene.vue";
+import UIScene from "@/components/Scenes/UIScene.vue";
 
 const { width, height } = useWindowSize()
 const gameScene = ref(null)
+const score = ref(0)
+
+provide('score', score)
 
 const gameConfig = {
   type: Phaser.AUTO,
@@ -22,6 +26,9 @@ const gameConfig = {
       debug: true
     }
   },
+  scale: {
+    autoCenter: Phaser.Scale.CENTER_HORIZONTALLY, // 中央配置
+  },
   audio: {
     disableWebAudio: true
   },
@@ -30,7 +37,6 @@ const gameConfig = {
   },
   backgroundColor: '#4488aa',
 }
-provide('player', computed(() => gameScene.value?.player))
 
 </script>
 
@@ -41,10 +47,12 @@ provide('player', computed(() => gameScene.value?.player))
       <p>{{ width }}</p>
       <p>{{ height }}</p>
     </div>
-    <Game :config="gameConfig">
+    <Game :auto-start="false" :config="gameConfig">
       <TitleScene />
 
-      <GameScene ref="gameScene" />
+      <GameScene />
+
+      <UIScene />
     </Game>
   </div>
 </template>

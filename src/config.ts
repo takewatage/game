@@ -1,6 +1,6 @@
 export default {
-  WIDTH: 960,
-  HEIGHT: 540,
+  WIDTH: 800,
+  HEIGHT: 600,
   FONTS: {
     TEXT: '"M PLUS 1p"'
   },
@@ -11,5 +11,6 @@ export default {
   },
   GAME: {
     PLAYER_HP: 100,
+    STAR_DEFAULT_NUM: 10
   }
 }
