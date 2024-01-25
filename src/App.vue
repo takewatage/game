@@ -9,7 +9,7 @@ import GameScene from "@/components/Scenes/GameScene.vue";
 import UIScene from "@/components/Scenes/UIScene.vue";
 
 const { width, height } = useWindowSize()
-const gameScene = ref(null)
+
 const score = ref(0)
 
 provide('score', score)

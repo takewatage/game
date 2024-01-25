@@ -1,4 +1,4 @@
-import BaseClass from "@/class/BaseClass";
+import BaseClass from "@/class/entities/BaseClass";
 import config from "@/config";
 
 export default class StarClass extends BaseClass {

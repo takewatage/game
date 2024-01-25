@@ -2,11 +2,11 @@
 import { Scene, Image } from 'phavuer'
 import { ref, nextTick, provide, inject, Ref } from "vue"
 import config from "../../config"
-import PlatForm from "@/components/GameObject/PlatForm.vue"
-import Repository from "../../class/Repository"
+import PlatForm from "@/components/GameObjects/PlatForm.vue"
+import Repository from "../../class/entities/Repository"
 import Star from "../../class/StarClass"
 import GameButton from "@/components/Ui/GameButton.vue"
-import StarObject from "@/components/GameObject/StarObject.vue"
+import StarObject from "@/components/GameObjects/StarObject.vue"
 
 const player = ref<Phaser.Physics.Arcade.Sprite>()
 const cursors = ref(null)
@@ -153,10 +153,6 @@ const createStar = (ob) => {
   stars.value.add(ob)
 }
 
-const addStar = () => {
-  createStarObject(1)
-}
-
 </script>
 
 <template>
@@ -181,14 +177,6 @@ const addStar = () => {
       :key="v.id"
       :star="v"
       @create="createStar"
-    />
-
-    <GameButton
-      :x="config.WIDTH / 2"
-      :y="config.HEIGHT / 2"
-      :width="155"
-      :height="50"
-      @on-click="addStar"
     />
 
   </Scene>
