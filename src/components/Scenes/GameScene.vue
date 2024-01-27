@@ -23,16 +23,24 @@ const bombs = new Repository<Bomb>()
 const score = inject('score') as Ref<number>
 
 const PLATFORM = [
-  { x: 50, y: 290, width: 320, height: 50 },
+  // { x: 50, y: 290, width: 320, height: 50 },
   { x: config.WIDTH - 320, y: 440, width: 320, height: 50 },
   { x: 0, y: config.HEIGHT, width: config.WIDTH, height: 50 },
 ]
+
+const emit = defineEmits<{
+  'gameOver': [void],
+}>()
 
 const create = (scene: Phaser.Scene) => {
   sceneR.value = scene
   PlatformGroup.value = scene.add.group()
   starGroup.value = scene.physics.add.group()
   bombGroup.value = scene.physics.add.group()
+  score.value = 0
+  stars.clear()
+  bombs.clear()
+  platforms.clear()
 
   createPlatformObject()
 
@@ -125,10 +133,11 @@ const createBombObject = (count: number) => {
       y: 16,
       target: player.value
     })
+    // ボムに当たった時の処理
     bomb.on('hit', () => {
-      sceneR.value.physics.pause()
       player.value.setTint(0xff0000)
       player.value.anims.play('turn')
+      emit('gameOver')
     })
     bombs.add(bomb)
   }

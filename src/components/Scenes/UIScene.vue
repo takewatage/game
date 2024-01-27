@@ -3,8 +3,8 @@
     <Rectangle
       v-if="result"
       :origin="0"
-      :width="960"
-      :height="540"
+      :width="config.WIDTH"
+      :height="config.HEIGHT"
       :fillColor="0x000000"
       :tween="bg.tween"
       @pointerdown="onClick"
@@ -17,7 +17,7 @@
       :y="0"
       :origin="0"
       :scale="0.6"
-      :style="{ fontSize: '30px', fontStyle: 'bold' }"
+      :style="{ fontSize: '30px', fontStyle: 'bold', align: 'center' }"
       :tween="scoreText.tween"
     />
   </Scene>
@@ -26,8 +26,14 @@
 <script lang="ts">
 import { defineComponent, inject, ref, reactive, watch } from 'vue'
 import { Scene, Text, Rectangle, Phavuer } from 'phavuer'
+import config from "../../config"
 
 export default defineComponent({
+  computed: {
+    config() {
+      return config
+    }
+  },
   components: { Scene, Rectangle, Text },
   props: ['result'],
   emits: ['reset'],

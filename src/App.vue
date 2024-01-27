@@ -10,7 +10,20 @@ import UIScene from "@/components/Scenes/UIScene.vue";
 
 const { width, height } = useWindowSize()
 
+const gameRef = ref<Phaser.Game>()
 const score = ref(0)
+const result = ref(false)
+
+const onGameOver = () => {
+  gameRef.value?.scene.pause('GameScene')
+  result.value = true
+}
+const onReset = () => {
+  gameRef.value?.scene.stop('GameScene')
+  gameRef.value?.scene.stop('UIScene')
+  gameRef.value?.scene.start('TitleScene')
+  result.value = false
+}
 
 provide('score', score)
 
@@ -38,16 +51,22 @@ const gameConfig = {
   backgroundColor: '#4488aa',
 }
 
+const onReady = (v: Phaser.Game) => {
+  gameRef.value = v
+  config.BLEND_MODES.OVERLAY = (v.renderer as Phaser.Renderer.WebGL.WebGLRenderer).addBlendMode([WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE], WebGLRenderingContext.FUNC_ADD)
+  window.addEventListener('resize', () => v.scale.refresh())
+}
+
 </script>
 
 <template>
   <div>
-    <Game :auto-start="false" :config="gameConfig">
+    <Game @ready="onReady" :auto-start="false" :config="gameConfig">
       <TitleScene />
 
-      <GameScene />
+      <GameScene @gameOver="onGameOver" />
 
-      <UIScene />
+      <UIScene :result="result" @reset="onReset" />
     </Game>
   </div>
 </template>
