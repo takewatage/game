@@ -5,12 +5,6 @@
     box-sizing: border-box;
     max-width: 100%;
 }
-.fontLoader {
-    font-family: 'Electrolize', 'M PLUS 1p', sans-serif;
-    position: absolute;
-    left: -1000px;
-    visibility: hidden;
-}
 li {
     list-style: none;
 }
@@ -26,12 +20,12 @@ body {
 .container {
     width: 960px;
     margin: auto;
-}
-
-.main {
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: 100vh;
+    flex-direction: column;
+    max-height: 100vh;
 }
 
 .fullscreenButton {
