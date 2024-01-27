@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Game } from 'phavuer'
-import { provide, ref, computed } from "vue"
+import { provide, ref } from "vue"
 import { useWindowSize } from '@vueuse/core'
 
 import TitleScene from "@/components/Scenes/TitleScene.vue"
@@ -23,7 +23,7 @@ const gameConfig = {
     default: 'arcade',
     arcade: {
       gravity: { y: 300 }, // 重力
-      debug: true
+      debug: config.GAME.DEBUG
     }
   },
   scale: {
@@ -42,11 +42,6 @@ const gameConfig = {
 
 <template>
   <div>
-    <div class="menu">
-      <h1>window</h1>
-      <p>{{ width }}</p>
-      <p>{{ height }}</p>
-    </div>
     <Game :auto-start="false" :config="gameConfig">
       <TitleScene />
 
@@ -56,14 +51,3 @@ const gameConfig = {
     </Game>
   </div>
 </template>
-
-<style lang="scss">
-  .menu {
-    position: fixed;
-    bottom: 10px;
-    left: 10px;
-    border: 1px solid white;
-    padding: 10px 25px;
-    color: white;
-  }
-</style>

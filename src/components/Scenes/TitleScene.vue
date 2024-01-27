@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Scene, useGame, Text } from 'phavuer'
-import loadAssets from '../loadAssets'
-import GameButton from "../components/Ui/GameButton.vue";
-import config from "../config";
+import { Scene, useGame } from 'phavuer'
+import loadAssets from '../../loadAssets'
+import config from "../../config";
+import GameButton from "@/components/Ui/GameButton.vue";
 
 const game = useGame()
 

@@ -3,6 +3,8 @@ export default class BaseClass {
   event = new EventTarget()
   x: number = NaN
   y: number = NaN
+  width: number = NaN
+  height: number = NaN
   on (name: string, callback: EventListenerOrEventListenerObject) {
     this.event.addEventListener(name, callback)
     return this

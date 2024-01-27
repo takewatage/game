@@ -1,32 +1,33 @@
-import BaseClass from "../class/entities/BaseClass";
-import config from "../config";
+import BaseClass from "../class/entities/BaseClass"
+import config from "../config"
 
-export default class StarClass extends BaseClass {
+export default class BombClass extends BaseClass {
   x = 0
   y= 0
   velocityX: number
   velocityY: number
+  bounceX = 0 // バウンド率
   bounceY = 0 // バウンド率
   target: Phaser.Physics.Arcade.Sprite
   constructor ({ x, y, target }: { x: number, y: number, target: Phaser.Physics.Arcade.Sprite }) {
     super()
     this.x = x
     this.y = y
-    this.bounceY = config.GAME.DEBUG ? 0 : Phaser.Math.FloatBetween(0.6, 0.9)
-    this.velocityX = 0
-    this.velocityY = 0
+    this.bounceX = 1
+    this.bounceY = 1
+    this.velocityX = Phaser.Math.Between(-200, 200)
+    this.velocityY = 20
     this.target = target
   }
 
   update() {
-    // 画面外に出たら削除
-    if(this.overScreen(this, 20)) {
-      this.emit('destroy')
-    }
+    // if(Phaser.Math.Distance.Between(this.x, this.y, this.target.x, this.target.y) < 35) {
+    //   this.emit('hit')
+    // }
   }
 
   hit () {
-    this.emit('destroy')
+    this.emit('hit')
   }
 
   // 画面外判定

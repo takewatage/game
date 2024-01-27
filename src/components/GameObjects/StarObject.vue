@@ -7,12 +7,13 @@ const props = defineProps<{
   star: Star
 }>()
 
-props.star.on('hit', () => {
-  console.log("hit!!!")
-})
+const emit = defineEmits<{
+  'create': [Phaser.GameObjects.Sprite],
+}>()
 
-const createStar = (star) => {
-  props.star.gameOb = star
+const create = (ob: Phaser.GameObjects.Sprite) => {
+  ob.setData('id', props.star.id);
+  emit('create', ob)
 }
 
 </script>
@@ -21,9 +22,8 @@ const createStar = (star) => {
   <Sprite
     v-model:x="star.x"
     v-model:y="star.y"
-    v-model:visible="star.active"
     texture="star"
-    @create="createStar"
+    @create="create"
   >
     <Body
       :velocityX="star.velocityX"
