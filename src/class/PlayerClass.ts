@@ -1,6 +1,12 @@
 import BaseClass from '../class/entities/BaseClass'
-import config from '../config'
-import { useScene } from 'phavuer'
+
+interface IKeys {
+  up: Phaser.Input.Keyboard.Key
+  up2: Phaser.Input.Keyboard.Key
+  down: Phaser.Input.Keyboard.Key
+  left: Phaser.Input.Keyboard.Key
+  right: Phaser.Input.Keyboard.Key
+}
 
 export default class PlayerClass extends BaseClass {
   x = 0
@@ -8,7 +14,7 @@ export default class PlayerClass extends BaseClass {
   velocityX = 0
   velocityY = 0
   gameOb: Phaser.Physics.Arcade.Sprite | undefined
-  cursors: undefined | Phaser.Types.Input.Keyboard.CursorKeys
+  cursors: IKeys | undefined
   constructor({ x, y }: { x: number; y: number }) {
     super()
     this.x = x
@@ -57,13 +63,22 @@ export default class PlayerClass extends BaseClass {
     }
 
     // UPキーでplayerが地面に接しているとき
-    if (this.cursors?.up.isDown && this.gameOb.body?.touching.down) {
+    if ((this.cursors?.up.isDown || this.cursors?.up2.isDown) && this.gameOb.body?.touching.down) {
       this.gameOb.setVelocityY(-330)
     }
   }
 
   #setController(scene: Phaser.Scene) {
-    this.cursors = scene.input.keyboard?.createCursorKeys()
+    // this.cursors = scene.input.keyboard?.createCursorKeys()
+    const codes = Phaser.Input.Keyboard.KeyCodes
+    // キー入力
+    this.cursors = scene.input.keyboard?.addKeys({
+      up: codes.W,
+      down: codes.S,
+      left: codes.A,
+      right: codes.D,
+      up2: codes.SPACE,
+    }) as IKeys
   }
 
   //playerのアニメーション設定
