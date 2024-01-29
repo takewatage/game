@@ -8,7 +8,7 @@ export default class BombClass extends BaseClass {
   velocityY: number
   bounceX = 0 // バウンド率
   bounceY = 0 // バウンド率
-  target: Phaser.Physics.Arcade.Sprite
+  target: Phaser.Physics.Arcade.Sprite|null
   constructor ({ x, y, target }: { x: number, y: number, target: Phaser.Physics.Arcade.Sprite }) {
     super()
     this.x = x

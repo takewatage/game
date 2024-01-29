@@ -1,21 +1,24 @@
 <script setup lang="ts">
-import { Scene, Image } from 'phavuer'
+import { Scene, Image, Sprite, Body, Container } from 'phavuer'
 import { ref, nextTick, inject, Ref } from "vue"
 import config from "../../config"
 import PlatFormObject from "@/components/GameObjects/PlatFormObject.vue"
 import Repository from "../../class/entities/Repository"
 import Star from "../../class/StarClass"
 import Bomb from "../../class/BombClass"
+import Player from "../../class/PlayerClass"
 import StarObject from "@/components/GameObjects/StarObject.vue"
 import BombObject from "@/components/GameObjects/BombObject.vue"
 import PlatForm from "../../class/PlatFormClass";
+import PlayerObject from "@/components/GameObjects/PlayerObject.vue";
 
-const sceneR = ref()
+const scene = ref()
 const player = ref()
-const cursors = ref()
+const player2 = ref<Player>()
 const starGroup = ref()
 const PlatformGroup = ref()
 const bombGroup = ref()
+
 const platforms = new Repository<PlatForm>()
 const stars = new Repository<Star>()
 const bombs = new Repository<Bomb>()
@@ -23,7 +26,7 @@ const bombs = new Repository<Bomb>()
 const score = inject('score') as Ref<number>
 
 const PLATFORM = [
-  // { x: 50, y: 290, width: 320, height: 50 },
+  { x: 50, y: 290, width: 320, height: 50 },
   { x: config.WIDTH - 320, y: 440, width: 320, height: 50 },
   { x: 0, y: config.HEIGHT, width: config.WIDTH, height: 50 },
 ]
@@ -32,73 +35,52 @@ const emit = defineEmits<{
   'gameOver': [void],
 }>()
 
-const create = (scene: Phaser.Scene) => {
-  sceneR.value = scene
-  PlatformGroup.value = scene.add.group()
-  starGroup.value = scene.physics.add.group()
-  bombGroup.value = scene.physics.add.group()
+const create = (_scene: Phaser.Scene) => {
+  scene.value = _scene
+  PlatformGroup.value = _scene.add.group()
+  starGroup.value = _scene.physics.add.group()
+  bombGroup.value = _scene.physics.add.group()
   score.value = 0
   stars.clear()
   bombs.clear()
   platforms.clear()
 
   createPlatformObject()
-
-  player.value = scene.physics.add.sprite(100, 450, 'dude');
-  player.value.setBounce(0.2)
-  player.value.setCollideWorldBounds(true) // 衝突判定する
-  player.value.setDepth(1)
-  // playerの当たり判定調整
-  player.value.setSize(20, 33)
-  player.value.setOffset(5.5, 15)
-
-  scene.anims.create({
-    key: 'left',
-    frames: scene.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
-    frameRate: 10,
-    repeat: -1
-  });
-
-  scene.anims.create({
-    key: 'turn',
-    frames: [{ key: 'dude', frame: 4 }],
-    frameRate: 20
-  });
-
-  scene.anims.create({
-    key: 'right',
-    frames: scene.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
-    frameRate: 10,
-    repeat: -1
-  });
-
-  cursors.value = scene.input.keyboard?.createCursorKeys();
-
+  createPlayerObject()
   createStarObject(config.GAME.STAR_DEFAULT_NUM)
 
   nextTick(() => {
-    scene.physics.add.collider(player.value, PlatformGroup.value)
-    scene.physics.add.collider(starGroup.value, PlatformGroup.value)
-    scene.physics.add.collider(bombGroup.value, PlatformGroup.value)
+    // プラットホームの当たり判定
+    _scene.physics.add.collider(player.value, PlatformGroup.value)
+    _scene.physics.add.collider(starGroup.value, PlatformGroup.value)
+    _scene.physics.add.collider(bombGroup.value, PlatformGroup.value)
 
     // プレイヤー当たり判定
-    scene.physics.add.overlap(player.value, starGroup.value, collectStar)
-    scene.physics.add.collider(player.value, bombGroup.value, hitBomb);
+    _scene.physics.add.overlap(player.value, starGroup.value, collectStar)
+    _scene.physics.add.collider(player.value, bombGroup.value, hitBomb);
   })
 }
 
 const hitBomb = (_player: any, _bomb: any) => {
-  const bomb = bombs.list.find(x => x.id === _bomb.getData('id'))
+  const bomb = bombs.find(_bomb.getData('id'))
   bomb?.hit()
 }
 
 const collectStar = (_player: any, _star: any) => {
-  const star = stars.list.find(x => x.id === _star.getData('id'))
+  const star = stars.find(_star.getData('id'))
   star?.hit()
 }
 
+const createPlayerObject = () => {
+  player2.value = new Player({
+    x: 200,
+    y: 450,
+  })
+    .create(scene.value)
+}
+
 const createStarObject = (count: number) => {
-  for (let i=0; i<count; i++) {
+  for (let i = 0; i < count; i++) {
     const step = i * 70
     const star = new Star({
       x: 50 + step,
@@ -125,8 +107,9 @@ const createPlatformObject = () => {
 }
 
 const createBombObject = (count: number) => {
-  let x = (player.value.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-  for (let i=0; i<count; i++) {
+  // プレイヤーの逆に爆弾を出現させる
+  let x = (player.value?.x || 0 < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+  for (let i = 0; i < count; i++) {
     const step = i * 50
     const bomb = new Bomb({
       x: x + step,
@@ -144,30 +127,12 @@ const createBombObject = (count: number) => {
 }
 
 const update = () => {
+  player2.value?.update()
   stars.list.forEach(s => s.update())
   bombs.list.forEach(s => s.update())
 
-  if (cursors.value.left.isDown) {
-    player.value.setVelocityX(-160);
-
-    player.value.anims.play('left', true);
-  } else if (cursors.value.right.isDown) {
-    player.value.setVelocityX(160);
-
-    player.value.anims.play('right', true);
-  } else {
-    player.value.setVelocityX(0);
-
-    player.value.anims.play('turn');
-  }
-
-  // UPキーでplayerが地面に接しているとき
-  if (cursors.value.up.isDown && player.value.body.touching.down) {
-    player.value.setVelocityY(-330);
-  }
-
   // 全部のstarを取ったら
-  if(stars.list.length === 0) {
+  if (stars.list.length === 0) {
     createStarObject(config.GAME.STAR_DEFAULT_NUM)
     createBombObject(1)
   }
@@ -183,6 +148,10 @@ const createStar = (ob: Phaser.GameObjects.Sprite) => {
 
 const createBomb = (ob: Phaser.GameObjects.Container) => {
   bombGroup.value.add(ob)
+}
+
+const createPlayer = (ob: Phaser.Physics.Arcade.Sprite) => {
+  player.value = ob
 }
 
 </script>
@@ -202,6 +171,12 @@ const createBomb = (ob: Phaser.GameObjects.Container) => {
       :data="v"
       :key="v.id"
       @create="createPlatform"
+    />
+
+    <PlayerObject
+      v-if="player2"
+      :player="player2"
+      @create="createPlayer"
     />
 
     <StarObject
