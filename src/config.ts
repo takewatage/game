@@ -11,6 +11,6 @@ export default {
   GAME: {
     DEBUG: true,
     PLAYER_HP: 100,
-    STAR_DEFAULT_NUM: 1,
+    STAR_DEFAULT_NUM: 10,
   },
 }

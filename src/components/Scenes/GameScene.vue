@@ -14,11 +14,11 @@ import PlayerObject from '@/components/GameObjects/PlayerObject.vue'
 
 const scene = ref()
 const player = ref()
-const player2 = ref<Player>()
 const starGroup = ref()
 const PlatformGroup = ref()
 const bombGroup = ref()
 
+const playerClass = ref<Player>()
 const platforms = new Repository<PlatForm>()
 const stars = new Repository<Star>()
 const bombs = new Repository<Bomb>()
@@ -72,7 +72,7 @@ const collectStar = (_player: any, _star: any) => {
 }
 
 const createPlayerObject = () => {
-  player2.value = new Player({
+  playerClass.value = new Player({
     x: 200,
     y: 450,
   }).create(scene.value)
@@ -126,7 +126,7 @@ const createBombObject = (count: number) => {
 }
 
 const update = () => {
-  player2.value?.update()
+  playerClass.value?.update()
   stars.list.forEach((s) => s.update())
   bombs.list.forEach((s) => s.update())
 
@@ -177,8 +177,7 @@ const createPlayer = (ob: Phaser.Physics.Arcade.Sprite) => {
     />
 
     <PlayerObject
-      v-if="player2"
-      :player="player2"
+      :player="playerClass"
       @create="createPlayer"
     />
 
