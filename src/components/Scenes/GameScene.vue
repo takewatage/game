@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { Scene, Image, Sprite, Body, Container } from 'phavuer'
-import { ref, nextTick, inject, Ref } from "vue"
-import config from "../../config"
-import PlatFormObject from "@/components/GameObjects/PlatFormObject.vue"
-import Repository from "../../class/entities/Repository"
-import Star from "../../class/StarClass"
-import Bomb from "../../class/BombClass"
-import Player from "../../class/PlayerClass"
-import StarObject from "@/components/GameObjects/StarObject.vue"
-import BombObject from "@/components/GameObjects/BombObject.vue"
-import PlatForm from "../../class/PlatFormClass";
-import PlayerObject from "@/components/GameObjects/PlayerObject.vue";
+import { ref, nextTick, inject, Ref } from 'vue'
+import config from '../../config'
+import PlatFormObject from '@/components/GameObjects/PlatFormObject.vue'
+import Repository from '../../class/entities/Repository'
+import Star from '../../class/StarClass'
+import Bomb from '../../class/BombClass'
+import Player from '../../class/PlayerClass'
+import StarObject from '@/components/GameObjects/StarObject.vue'
+import BombObject from '@/components/GameObjects/BombObject.vue'
+import PlatForm from '../../class/PlatFormClass'
+import PlayerObject from '@/components/GameObjects/PlayerObject.vue'
 
 const scene = ref()
 const player = ref()
@@ -32,7 +32,7 @@ const PLATFORM = [
 ]
 
 const emit = defineEmits<{
-  'gameOver': [void],
+  gameOver: [void]
 }>()
 
 const create = (_scene: Phaser.Scene) => {
@@ -57,7 +57,7 @@ const create = (_scene: Phaser.Scene) => {
 
     // プレイヤー当たり判定
     _scene.physics.add.overlap(player.value, starGroup.value, collectStar)
-    _scene.physics.add.collider(player.value, bombGroup.value, hitBomb);
+    _scene.physics.add.collider(player.value, bombGroup.value, hitBomb)
   })
 }
 
@@ -75,8 +75,7 @@ const createPlayerObject = () => {
   player2.value = new Player({
     x: 200,
     y: 450,
-  })
-    .create(scene.value)
+  }).create(scene.value)
 }
 
 const createStarObject = (count: number) => {
@@ -85,7 +84,7 @@ const createStarObject = (count: number) => {
     const star = new Star({
       x: 50 + step,
       y: 0,
-      target: player.value
+      target: player.value,
     })
     star.on('destroy', () => {
       score.value += 10
@@ -95,12 +94,12 @@ const createStarObject = (count: number) => {
 }
 
 const createPlatformObject = () => {
-  PLATFORM.forEach(ob => {
+  PLATFORM.forEach((ob) => {
     const platform = new PlatForm({
       x: ob.x,
       y: ob.y,
       width: ob.width,
-      height: ob.height
+      height: ob.height,
     })
     platforms.add(platform)
   })
@@ -108,13 +107,13 @@ const createPlatformObject = () => {
 
 const createBombObject = (count: number) => {
   // プレイヤーの逆に爆弾を出現させる
-  let x = (player.value?.x || 0 < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+  let x = player.value?.x || 0 < 400 ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400)
   for (let i = 0; i < count; i++) {
     const step = i * 50
     const bomb = new Bomb({
       x: x + step,
       y: 16,
-      target: player.value
+      target: player.value,
     })
     // ボムに当たった時の処理
     bomb.on('hit', () => {
@@ -128,8 +127,8 @@ const createBombObject = (count: number) => {
 
 const update = () => {
   player2.value?.update()
-  stars.list.forEach(s => s.update())
-  bombs.list.forEach(s => s.update())
+  stars.list.forEach((s) => s.update())
+  bombs.list.forEach((s) => s.update())
 
   // 全部のstarを取ったら
   if (stars.list.length === 0) {
@@ -153,11 +152,15 @@ const createBomb = (ob: Phaser.GameObjects.Container) => {
 const createPlayer = (ob: Phaser.Physics.Arcade.Sprite) => {
   player.value = ob
 }
-
 </script>
 
 <template>
-  <Scene name="GameScene" :autoStart="false" @create="create" @update="update">
+  <Scene
+    name="GameScene"
+    :autoStart="false"
+    @create="create"
+    @update="update"
+  >
     <Image
       :x="config.WIDTH / 2"
       :y="config.HEIGHT / 2"
@@ -192,6 +195,5 @@ const createPlayer = (ob: Phaser.Physics.Arcade.Sprite) => {
       :bomb="v"
       @create="createBomb"
     />
-
   </Scene>
 </template>

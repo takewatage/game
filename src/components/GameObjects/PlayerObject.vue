@@ -1,28 +1,26 @@
 <script setup lang="ts">
-import { Body } from "phavuer"
-import ArcadeSprite from "@/components/Phavuer/ArcadeSprite.vue"
-import Player from "../../class/PlayerClass"
+import { Body } from 'phavuer'
+import ArcadeSprite from '@/components/Phavuer/ArcadeSprite.vue'
+import Player from '../../class/PlayerClass'
 
 const props = defineProps<{
   player: Player
 }>()
 
 const emit = defineEmits<{
-  'create': [Phaser.GameObjects.Sprite],
+  create: [Phaser.GameObjects.Sprite]
 }>()
 
 const createPlayer = (ob: Phaser.Physics.Arcade.Sprite) => {
   props.player.gameOb = ob
   emit('create', ob)
 }
-
 </script>
 
 <template>
-
   <ArcadeSprite
     texture="dude"
-    :tint="0xFFFFFF"
+    :tint="0xffffff"
     :x="player.x"
     :y="player.y"
     @create="createPlayer"
@@ -41,5 +39,4 @@ const createPlayer = (ob: Phaser.Physics.Arcade.Sprite) => {
       :moves="true"
     />
   </ArcadeSprite>
-
 </template>

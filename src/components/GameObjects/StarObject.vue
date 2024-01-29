@@ -1,21 +1,20 @@
 <script setup lang="ts">
-import { inject } from "vue";
-import { Sprite, Phavuer, Body, Container, useScene, StaticBody, Rectangle } from "phavuer";
-import Star from "../../class/StarClass"
+import { inject } from 'vue'
+import { Sprite, Phavuer, Body, Container, useScene, StaticBody, Rectangle } from 'phavuer'
+import Star from '../../class/StarClass'
 
 const props = defineProps<{
   star: Star
 }>()
 
 const emit = defineEmits<{
-  'create': [Phaser.GameObjects.Sprite],
+  create: [Phaser.GameObjects.Sprite]
 }>()
 
 const create = (ob: Phaser.GameObjects.Sprite) => {
-  ob.setData('id', props.star.id);
+  ob.setData('id', props.star.id)
   emit('create', ob)
 }
-
 </script>
 
 <template>

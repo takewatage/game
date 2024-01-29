@@ -1,22 +1,19 @@
 <script setup lang="ts">
-import { Image, Body, Container } from "phavuer";
-import Bomb from "../../class/BombClass";
-
+import { Image, Body, Container } from 'phavuer'
+import Bomb from '../../class/BombClass'
 
 const props = defineProps<{
   bomb: Bomb
 }>()
 
 const emit = defineEmits<{
-  'create': [Phaser.GameObjects.Container],
+  create: [Phaser.GameObjects.Container]
 }>()
 
 const create = (ob: Phaser.GameObjects.Container) => {
-  ob.setData('id', props.bomb.id);
+  ob.setData('id', props.bomb.id)
   emit('create', ob)
 }
-
-
 </script>
 
 <template>

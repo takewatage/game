@@ -2,16 +2,15 @@ export default {
   WIDTH: 800,
   HEIGHT: 600,
   FONTS: {
-    TEXT: '"M PLUS 1p"'
+    TEXT: '"M PLUS 1p"',
   },
-  COLORS: {
-  },
+  COLORS: {},
   BLEND_MODES: {
-    OVERLAY: NaN
+    OVERLAY: NaN,
   },
   GAME: {
     DEBUG: true,
     PLAYER_HP: 100,
-    STAR_DEFAULT_NUM: 1
-  }
+    STAR_DEFAULT_NUM: 1,
+  },
 }

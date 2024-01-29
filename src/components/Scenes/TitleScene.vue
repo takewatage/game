@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Scene, useGame } from 'phavuer'
 import loadAssets from '../../loadAssets'
-import config from "../../config";
-import GameButton from "@/components/Ui/GameButton.vue";
+import config from '../../config'
+import GameButton from '@/components/Ui/GameButton.vue'
 
 const game = useGame()
 
@@ -15,11 +15,13 @@ const onStart = () => {
   game.scene.start('UIScene')
   game.scene.stop('TitleScene')
 }
-
 </script>
 
 <template>
-  <Scene name="TitleScene" @preload="preload">
+  <Scene
+    name="TitleScene"
+    @preload="preload"
+  >
     <GameButton
       :x="config.WIDTH / 2"
       :y="config.HEIGHT / 2"
