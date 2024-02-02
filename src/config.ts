@@ -9,7 +9,7 @@ export default {
     OVERLAY: NaN,
   },
   GAME: {
-    DEBUG: false,
+    DEBUG: true,
     PLAYER_HP: 100,
     STAR_DEFAULT_NUM: 10,
   },

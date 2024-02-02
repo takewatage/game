@@ -11,25 +11,26 @@ import StarObject from '@/components/GameObjects/StarObject.vue'
 import BombObject from '@/components/GameObjects/BombObject.vue'
 import PlatForm from '../../class/PlatFormClass'
 import PlayerObject from '@/components/GameObjects/PlayerObject.vue'
+import { useObject } from "../../composable/useObject";
 
 const scene = ref()
 const player = ref()
 const starGroup = ref()
 const PlatformGroup = ref()
 const bombGroup = ref()
+const bulletGroup = ref()
 
 const playerClass = ref<Player>()
-const platforms = new Repository<PlatForm>()
 const stars = new Repository<Star>()
 const bombs = new Repository<Bomb>()
+const attackObject = ref()
 
 const score = inject('score') as Ref<number>
 
-const PLATFORM = [
-  { x: 50, y: 290, width: 320, height: 50 },
-  { x: config.WIDTH - 320, y: 440, width: 320, height: 50 },
-  { x: 0, y: config.HEIGHT, width: config.WIDTH, height: 50 },
-]
+const {
+  platforms,
+  createPlatformObject,
+} = useObject()
 
 const emit = defineEmits<{
   gameOver: [void]
@@ -49,6 +50,12 @@ const create = (_scene: Phaser.Scene) => {
   createPlayerObject()
   createStarObject(config.GAME.STAR_DEFAULT_NUM)
 
+  // 弾丸グループ
+  bulletGroup.value = _scene.physics.add.group({
+    defaultKey: 'bomb',
+    maxSize: 10,
+  })
+
   nextTick(() => {
     // プラットホームの当たり判定
     _scene.physics.add.collider(player.value, PlatformGroup.value)
@@ -58,7 +65,12 @@ const create = (_scene: Phaser.Scene) => {
     // プレイヤー当たり判定
     _scene.physics.add.overlap(player.value, starGroup.value, collectStar)
     _scene.physics.add.collider(player.value, bombGroup.value, hitBomb)
+    _scene.physics.add.collider(bulletGroup.value, PlatformGroup.value, bulletHitPlatform, null, _scene);
   })
+}
+
+const bulletHitPlatform = (PlatformGroup: any, bullet: any) => {
+  bullet.setActive(false).setVisible(false);
 }
 
 const hitBomb = (_player: any, _bomb: any) => {
@@ -93,18 +105,6 @@ const createStarObject = (count: number) => {
   }
 }
 
-const createPlatformObject = () => {
-  PLATFORM.forEach((ob) => {
-    const platform = new PlatForm({
-      x: ob.x,
-      y: ob.y,
-      width: ob.width,
-      height: ob.height,
-    })
-    platforms.add(platform)
-  })
-}
-
 const createBombObject = (count: number) => {
   // プレイヤーの逆に爆弾を出現させる
   let x = player.value?.x || 0 < 400 ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400)
@@ -125,10 +125,36 @@ const createBombObject = (count: number) => {
   }
 }
 
+const fireBullet = () => {
+  let bullet = bulletGroup.value.get(player.value.x, player.value.y);
+
+  if (bullet) {
+    bullet.setActive(true).setVisible(true);
+
+    // マウスポインターの方向に向かって発射
+    let angle = Phaser.Math.Angle.Between(player.value.x, player.value.y, scene.value.input.x, scene.value.input.y);
+    if (scene.value.input.x > player.value.x) {
+      player.value.anims.play('right', true);
+    } else {
+      player.value.anims.play('left', true);
+    }
+    console.log(bullet.body.velocity)
+    scene.value.physics.velocityFromRotation(angle, 500, bullet.body.velocity);
+
+    // 発射角度に基づいて弾丸を回転させる（任意）
+    bullet.rotation = angle;
+  }
+}
+
 const update = () => {
   playerClass.value?.update()
   stars.list.forEach((s) => s.update())
   bombs.list.forEach((s) => s.update())
+
+  // 銃を発射
+  if (Phaser.Input.Keyboard.JustDown(scene.value.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B))) {
+    fireBullet();
+  }
 
   // 全部のstarを取ったら
   if (stars.list.length === 0) {

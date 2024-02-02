@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { Body } from 'phavuer'
+import { Body, Container, StaticBody, useScene } from 'phavuer'
 import ArcadeSprite from '@/components/Phavuer/ArcadeSprite.vue'
 import Player from '../../class/PlayerClass'
+import PlayerAttackObject from "@/components/GameObjects/PlayerAttackObject.vue";
 
 const props = defineProps<{
   player: Player
