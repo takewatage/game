@@ -1,5 +1,5 @@
 <template>
-  <Image :tween="tween"/>
+  <Image :tween="tween" />
 </template>
 
 <script lang="ts">
@@ -13,11 +13,11 @@ export default defineComponent({
     const tween = {
       scale: { from: 0, to: 1 },
       duration: 100,
-      onComplete: () => context.emit('end')
+      onComplete: () => context.emit('end'),
     }
     return {
-      tween
+      tween,
     }
-  }
+  },
 })
 </script>

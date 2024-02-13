@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { Body, Container, StaticBody, useScene } from 'phavuer'
+import { Body } from 'phavuer'
 import ArcadeSprite from '@/components/Phavuer/ArcadeSprite.vue'
 import Player from '../../class/PlayerClass'
-import PlayerAttackObject from "@/components/GameObjects/PlayerAttackObject.vue";
 
 const props = defineProps<{
   player: Player
@@ -22,8 +21,8 @@ const createPlayer = (ob: Phaser.Physics.Arcade.Sprite) => {
   <ArcadeSprite
     texture="dude"
     :tint="0xffffff"
-    :x="player.x"
-    :y="player.y"
+    v-model:x="player.x"
+    v-model:y="player.y"
     @create="createPlayer"
   >
     <Body

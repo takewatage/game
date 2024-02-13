@@ -9,9 +9,8 @@ import Bomb from '../../class/BombClass'
 import Player from '../../class/PlayerClass'
 import StarObject from '@/components/GameObjects/StarObject.vue'
 import BombObject from '@/components/GameObjects/BombObject.vue'
-import PlatForm from '../../class/PlatFormClass'
 import PlayerObject from '@/components/GameObjects/PlayerObject.vue'
-import { useObject } from "../../composable/useObject";
+import { usePlatform } from '../../composable/usePlatform'
 
 const scene = ref()
 const player = ref()
@@ -20,17 +19,15 @@ const PlatformGroup = ref()
 const bombGroup = ref()
 const bulletGroup = ref()
 
-const playerClass = ref<Player>()
+const playerClass = ref<Player>(new Player({}))
 const stars = new Repository<Star>()
 const bombs = new Repository<Bomb>()
-const attackObject = ref()
+
+const attacks = ref()
 
 const score = inject('score') as Ref<number>
 
-const {
-  platforms,
-  createPlatformObject,
-} = useObject()
+const { platforms, createPlatformObject } = usePlatform()
 
 const emit = defineEmits<{
   gameOver: [void]
@@ -56,7 +53,24 @@ const create = (_scene: Phaser.Scene) => {
     maxSize: 10,
   })
 
+  attacks.value = _scene.physics.add.group();
+
+
   nextTick(() => {
+    // 攻撃オブジェクトの初期化
+    // attackObject.value = _scene.physics.add.sprite(player.value.x, player.value.y, 'slash5');
+    // attackObject.value.setSize(30, 40); // 適切なサイズに設定
+    // attackObject.value.setDepth(1); // プレイヤーより前に表示
+    // attackObject.value.setGravityY(-300); // 重力を無効にする
+    // attackObject.value.disableBody(true, true)
+
+
+
+    // playerClass.value?.attackObject?.on(Phaser.Animations.Events.ANIMATION_COMPLETE, function () {
+    //   console.log("slash end!!")
+    //   playerClass.value.attackObject?.disableBody(true, true)
+    // }, scene.value);
+
     // プラットホームの当たり判定
     _scene.physics.add.collider(player.value, PlatformGroup.value)
     _scene.physics.add.collider(starGroup.value, PlatformGroup.value)
@@ -65,12 +79,12 @@ const create = (_scene: Phaser.Scene) => {
     // プレイヤー当たり判定
     _scene.physics.add.overlap(player.value, starGroup.value, collectStar)
     _scene.physics.add.collider(player.value, bombGroup.value, hitBomb)
-    _scene.physics.add.collider(bulletGroup.value, PlatformGroup.value, bulletHitPlatform, null, _scene);
+    _scene.physics.add.collider(bulletGroup.value, PlatformGroup.value, bulletHitPlatform)
   })
 }
 
 const bulletHitPlatform = (PlatformGroup: any, bullet: any) => {
-  bullet.setActive(false).setVisible(false);
+  bullet.setActive(false).setVisible(false)
 }
 
 const hitBomb = (_player: any, _bomb: any) => {
@@ -125,24 +139,37 @@ const createBombObject = (count: number) => {
   }
 }
 
+const attack = () => {
+
+  if (playerClass.value?.lastDirection === 'left') {
+    playerClass.value.attackObject?.enableBody(true, player.value.x - 20, player.value.y, true, true)
+    // attackObject.value.setPosition(player.value.x - 20, player.value.y)
+    playerClass.value.attackObject?.setFlipX(true)
+  } else if (playerClass.value?.lastDirection === 'right') {
+    playerClass.value.attackObject?.enableBody(true, player.value.x + 20, player.value.y, true, true)
+    // attackObject.value.setPosition(player.value.x + 20, player.value.y)
+    playerClass.value.attackObject?.setFlipX(false)
+  }
+  playerClass.value.attackObject?.play('attack5', true)
+}
+
 const fireBullet = () => {
-  let bullet = bulletGroup.value.get(player.value.x, player.value.y);
+  let bullet = bulletGroup.value.get(player.value.x, player.value.y)
 
   if (bullet) {
-    bullet.setActive(true).setVisible(true);
+    bullet.setActive(true).setVisible(true)
 
     // マウスポインターの方向に向かって発射
-    let angle = Phaser.Math.Angle.Between(player.value.x, player.value.y, scene.value.input.x, scene.value.input.y);
+    let angle = Phaser.Math.Angle.Between(player.value.x, player.value.y, scene.value.input.x, scene.value.input.y)
     if (scene.value.input.x > player.value.x) {
-      player.value.anims.play('right', true);
+      player.value.anims.play('right', true)
     } else {
-      player.value.anims.play('left', true);
+      player.value.anims.play('left', true)
     }
-    console.log(bullet.body.velocity)
-    scene.value.physics.velocityFromRotation(angle, 500, bullet.body.velocity);
+    scene.value.physics.velocityFromRotation(angle, 500, bullet.body.velocity)
 
     // 発射角度に基づいて弾丸を回転させる（任意）
-    bullet.rotation = angle;
+    bullet.rotation = angle
   }
 }
 
@@ -151,10 +178,15 @@ const update = () => {
   stars.list.forEach((s) => s.update())
   bombs.list.forEach((s) => s.update())
 
+
   // 銃を発射
   if (Phaser.Input.Keyboard.JustDown(scene.value.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B))) {
-    fireBullet();
+    fireBullet()
   }
+
+  // if (Phaser.Input.Keyboard.JustDown(scene.value.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE))) {
+  //   attack()
+  // }
 
   // 全部のstarを取ったら
   if (stars.list.length === 0) {

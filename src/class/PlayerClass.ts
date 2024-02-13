@@ -1,4 +1,5 @@
 import BaseClass from '../class/entities/BaseClass'
+import Sprite = Phaser.GameObjects.Sprite;
 
 interface IKeys {
   up: Phaser.Input.Keyboard.Key
@@ -11,18 +12,19 @@ interface IKeys {
 export default class PlayerClass extends BaseClass {
   x = 0
   y = 0
-  velocityX = 0
-  velocityY = 0
-  lastDirection = 'right' // 最後に押した方向を記憶
+  lastDirection = 'left' // 最後に押した方向を記憶
   gameOb: Phaser.Physics.Arcade.Sprite | undefined
   cursors: IKeys | undefined
 
   attackObject: Phaser.Physics.Arcade.Sprite | undefined
+  attackG: Phaser.GameObjects.Group | undefined
+  velocityX = 0
+  velocityY = 0
 
-  constructor({ x, y }: { x: number; y: number }) {
+  constructor({ x, y }: { x?: number; y?: number }) {
     super()
-    this.x = x
-    this.y = y
+    this.x = x ? x : 0
+    this.y = y ? y : 0
   }
 
   addCollider(scene: Phaser.Scene, ob: Phaser.Physics.Arcade.Group, func?: () => {}) {
@@ -44,17 +46,38 @@ export default class PlayerClass extends BaseClass {
   create(scene: Phaser.Scene) {
     this.#createAnims(scene)
     this.#setController(scene)
-    // プレイヤーと攻撃オブジェクトの初期化
-    this.attackObject = scene.physics.add.sprite(this.x, this.y, 'slash5')
-    this.attackObject.setScale(0.3)
-    this.attackObject.setSize(30,80)
-    this.attackObject.setDepth(1); // プレイヤーより前に表示
-    this.attackObject.setGravityY(-300); // 重力を無効にする
-    this.attackObject.disableBody(true, true)
 
-    // attacks.add(scene.physics.add.sprite(this.x, this.y, 'slash5'))
+    // プレイヤーと攻撃オブジェクトの初期化
+    // this.attackG = scene.add.group()
+    //
+    // const attackObject = scene.physics.add.sprite(this.x, this.y, 'slash5');
+    // attackObject.setScale(0.5, 0.5); // 適切なサイズに設定
+    // attackObject.setSize(60, 80); // 適切なサイズに設定
+    // attackObject.setDepth(1); // プレイヤーより前に表示
+    // attackObject.setGravityY(-300); // 重力を無効にする
+    // attackObject.setName('attackInfluence')
+    // // attackObject.disableBody(true, true)
+    // this.attackObject = attackObject
+    // this.attackG.add(this.attackObject)
+    //
+    // // 上の攻撃判定
+    // const attackObject2 = scene.physics.add.sprite(this.x, this.y, 'slash5');
+    // attackObject2.setScale(0.5, 0.5); // 適切なサイズに設定
+    // attackObject2.setSize(50, 30); // 適切なサイズに設定
+    // attackObject2.setDepth(1); // プレイヤーより前に表示
+    // attackObject2.setGravityY(-300); // 重力を無効にする
+    // attackObject2.setName('attackTop')
+    // this.attackG.add(attackObject2)
+    //
+    // this.attackObject.on(Phaser.Animations.Events.ANIMATION_COMPLETE, function () {
+    //   this.attackObject?.disableBody(true, true)
+    // }, this);
 
     return this
+  }
+
+  attackReset() {
+    this.attackObject?.disableBody(true, true)
   }
 
   update() {
@@ -66,11 +89,13 @@ export default class PlayerClass extends BaseClass {
       this.lastDirection = 'left'
       this.gameOb.setVelocityX(-160)
       this.gameOb.anims.play('left', true)
+      // this.attackObject?.setPosition(this.gameOb.x - 25, this.gameOb.y)
       // カーソル右
     } else if (this.cursors?.right.isDown) {
       this.lastDirection = 'right'
       this.gameOb.setVelocityX(160)
       this.gameOb.anims.play('right', true)
+      // this.attackObject?.setPosition(this.gameOb.x + 25, this.gameOb.y)
 
       // カーソルなし
     } else {
@@ -79,20 +104,30 @@ export default class PlayerClass extends BaseClass {
     }
 
     // UPキーでplayerが地面に接しているとき
-    if ((this.cursors?.up.isDown) && this.gameOb.body?.touching.down) {
+    if (this.cursors?.up.isDown && this.gameOb.body?.touching.down) {
       this.gameOb.setVelocityY(-330)
     }
 
     // 攻撃処理
-    if (this.cursors?.space.isDown) {
-      this.attack()
-    }
+    // if (this.cursors?.space.isDown) {
+    //   this.attack()
+    // }
+    //
+    // if (this.lastDirection === 'right') {
+    //   this.attackObject?.setPosition(this.gameOb.x + 25, this.gameOb.y)
+    // } else {
+    //   this.attackObject?.setPosition(this.gameOb.x - 25, this.gameOb.y)
+    // }
 
-    if(this.lastDirection === 'right') {
-      this.attackObject?.setPosition(this.gameOb.x + 25, this.gameOb.y);
-    } else {
-      this.attackObject?.setPosition(this.gameOb.x - 25, this.gameOb.y);
-    }
+    // this.attackG?.children.iterate((attack: Sprite) => {
+    //
+    //   if(attack.name === 'attackInfluence') {
+    //     attack.setPosition(this.gameOb?.x ? this.gameOb?.x - 25 : this.gameOb?.x, this.gameOb?.y)
+    //   }
+    //   if(attack.name === 'attackTop') {
+    //     attack.setPosition(this.gameOb?.x, this.gameOb?.y ? this.gameOb?.y - 20 : this.gameOb?.y)
+    //   }
+    // });
   }
 
   #setController(scene: Phaser.Scene) {
@@ -138,15 +173,14 @@ export default class PlayerClass extends BaseClass {
   }
 
   attack() {
-    console.log("attack!!!")
+    console.log('attack!!!')
     if (this.lastDirection === 'left') {
-      this.attackObject?.enableBody(true, this.x, this.y, true, true);
+      this.attackObject?.enableBody(true, this.x, this.y, true, true)
       this.attackObject?.setFlipX(true)
     } else if (this.lastDirection === 'right') {
-      this.attackObject?.enableBody(true, this.x, this.y, true, true);
+      this.attackObject?.enableBody(true, this.x, this.y, true, true)
       this.attackObject?.setFlipX(false)
     }
-    this.attackObject?.play('attack5', true);
-    // this.gameOb?.anims.play('attack5', true)
+    this.attackObject?.play('attack5', true)
   }
 }
